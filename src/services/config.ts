@@ -9,4 +9,8 @@ export const API_ENDPOINTS = {
     WEEKLY_ACTIVITIES: "/admin/weekly-activities",
     RECENT_USERS: "/admin/recent-users",
   },
+  USERS: {
+    GET_ALL: "/admin/get-all-users",
+    UPDATE_STATUS: "/admin/update-user-status",
+  },
 } as const;
