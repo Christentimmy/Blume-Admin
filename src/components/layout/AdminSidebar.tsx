@@ -1,12 +1,10 @@
 import { 
   LayoutDashboard, 
   Users, 
-  Flag, 
-  MessageSquare, 
+  BadgeCheck,
+  CreditCard,
   Settings, 
   Heart,
-  BarChart3,
-  Shield,
   LogOut
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
@@ -27,14 +25,14 @@ const mainNavItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Users", url: "/users", icon: Users },
   { title: "Matches", url: "/matches", icon: Heart },
-  { title: "Reports", url: "/reports", icon: Flag },
-  { title: "Messages", url: "/messages", icon: MessageSquare },
+  { title: "Verification", url: "/verification", icon: BadgeCheck },
+  { title: "Subscriptions", url: "/subscriptions", icon: CreditCard },
 ];
 
-const analyticsItems = [
-  { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Moderation", url: "/moderation", icon: Shield },
-];
+// const analyticsItems = [
+//   { title: "Analytics", url: "/analytics", icon: BarChart3 },
+//   { title: "Moderation", url: "/moderation", icon: Shield },
+// ];
 
 const settingsItems = [
   { title: "Settings", url: "/settings", icon: Settings },
@@ -93,7 +91,7 @@ export function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup className="mt-6">
+        {/* <SidebarGroup className="mt-6">
           <SidebarGroupLabel className="text-muted-foreground text-xs uppercase tracking-wider mb-2">
             Analytics
           </SidebarGroupLabel>
@@ -115,7 +113,7 @@ export function AdminSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup> */}
 
         <SidebarGroup className="mt-6">
           <SidebarGroupLabel className="text-muted-foreground text-xs uppercase tracking-wider mb-2">
