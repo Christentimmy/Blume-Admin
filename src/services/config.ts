@@ -7,5 +7,6 @@ export const API_ENDPOINTS = {
   DASHBOARD: {
     STATS: "/admin/dashboard-stats",
     WEEKLY_ACTIVITIES: "/admin/weekly-activities",
+    RECENT_USERS: "/admin/recent-users",
   },
 } as const;

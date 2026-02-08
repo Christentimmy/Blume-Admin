@@ -25,6 +25,18 @@ export interface WeeklyActivitiesResponse {
   data: WeeklyActivity[];
 }
 
+export interface RecentUser {
+  id: string;
+  full_name: string;
+  email: string;
+  createdAt: string;
+}
+
+export interface RecentUsersResponse {
+  message: string;
+  data: RecentUser[];
+}
+
 // Dashboard Service Class
 class DashboardService {
   private baseURL = apiConfig.baseURL;
@@ -79,6 +91,33 @@ class DashboardService {
       return data;
     } catch (error) {
       console.error("Weekly activities error:", error);
+      throw error;
+    }
+  }
+
+  // Get recent users
+  async getRecentUsers(): Promise<RecentUsersResponse> {
+    try {
+      const response = await fetch(
+        `${this.baseURL}${API_ENDPOINTS.DASHBOARD.RECENT_USERS}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch recent users");
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Recent users error:", error);
       throw error;
     }
   }

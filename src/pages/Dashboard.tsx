@@ -88,12 +88,8 @@ export default function Dashboard() {
           <ActivityChart />
         </div>
         <div>
-          <RecentReports />
+          <RecentUsers />
         </div>
-      </div>
-
-      <div>
-        <RecentUsers />
       </div>
     </div>
   );
