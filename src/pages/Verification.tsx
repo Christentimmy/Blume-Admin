@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, User } from "lucide-react";
+import { Search, User, CheckCircle2, XCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -27,6 +28,8 @@ export default function Verification() {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<IPendingVerification | null>(null);
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   useEffect(() => {
     const fetchPending = async () => {
@@ -77,7 +80,40 @@ export default function Verification() {
   };
 
   const handleRowClick = (item: IPendingVerification) => {
-    setSelected((prev) => (prev?.userId === item.userId ? null : item));
+    setSelected((prev) => (prev?._id === item._id ? null : item));
+    setRejectReason("");
+  };
+
+  const removeFromList = (id: string) => {
+    setItems((prev) => prev.filter((x) => x._id !== id));
+    setSelected((prev) => (prev?._id === id ? null : prev));
+  };
+
+  const handleUpdate = async (
+    item: IPendingVerification,
+    status: "approved" | "rejected",
+    reason?: string
+  ) => {
+    if (!item.userId) return;
+    if (status === "rejected" && !reason?.trim()) {
+      toast.error("Rejection reason is required");
+      return;
+    }
+
+    setSavingId(item._id);
+    try {
+      const res = await verificationService.updateVerification({
+        id: item._id,
+        status,
+        reason: reason?.trim() || "",
+      });
+      toast.success(res.message || "Verification updated");
+      removeFromList(item._id);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update verification");
+    } finally {
+      setSavingId(null);
+    }
   };
 
   return (
@@ -109,6 +145,7 @@ export default function Verification() {
                 <TableHead className="text-muted-foreground">User</TableHead>
                 <TableHead className="text-muted-foreground">Status</TableHead>
                 <TableHead className="text-muted-foreground hidden md:table-cell">Requested</TableHead>
+                <TableHead className="text-muted-foreground w-[120px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -130,20 +167,23 @@ export default function Verification() {
                     <TableCell className="hidden md:table-cell">
                       <div className="h-4 w-24 bg-muted rounded animate-pulse" />
                     </TableCell>
+                    <TableCell>
+                      <div className="h-8 w-20 bg-muted rounded animate-pulse" />
+                    </TableCell>
                   </TableRow>
                 ))
               ) : filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-center text-muted-foreground py-10">
+                  <TableCell colSpan={4} className="text-center text-muted-foreground py-10">
                     No pending verifications found.
                   </TableCell>
                 </TableRow>
               ) : (
                 filtered.map((item, index) => (
                   <TableRow
-                    key={`${item.userId}-${item.createdAt}`}
+                    key={item._id}
                     className={`border-border animate-slide-in cursor-pointer hover:bg-muted/50 transition-colors ${
-                      selected?.userId === item.userId ? "bg-muted/30" : ""
+                      selected?._id === item._id ? "bg-muted/30" : ""
                     }`}
                     style={{ animationDelay: `${index * 30}ms` }}
                     onClick={() => handleRowClick(item)}
@@ -171,6 +211,32 @@ export default function Verification() {
                     <TableCell className="hidden md:table-cell text-muted-foreground">
                       {formatDate(item.createdAt)}
                     </TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-success hover:text-success"
+                          disabled={savingId === item._id}
+                          onClick={() => handleUpdate(item, "approved")}
+                          title="Approve"
+                        >
+                          <CheckCircle2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive hover:text-destructive"
+                          disabled={savingId === item._id}
+                          onClick={() => {
+                            setSelected(item);
+                          }}
+                          title="Reject"
+                        >
+                          <XCircle className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))
               )}
@@ -191,10 +257,40 @@ export default function Verification() {
                     <h3 className="text-lg font-semibold truncate">{selected.full_name || "N/A"}</h3>
                     <p className="text-sm text-muted-foreground truncate">{selected.email}</p>
                     <p className="text-xs text-muted-foreground mt-1">User ID: {selected.userId}</p>
+                    <p className="text-xs text-muted-foreground">Request ID: {selected._id}</p>
                   </div>
                   <Badge variant="outline" className={statusClass(selected.status)}>
                     {selected.status}
                   </Badge>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    className="sm:w-auto"
+                    disabled={savingId === selected._id}
+                    onClick={() => handleUpdate(selected, "approved")}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="sm:w-auto"
+                    disabled={savingId === selected._id}
+                    onClick={() => handleUpdate(selected, "rejected", rejectReason)}
+                  >
+                    Reject
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">Rejection Reason</p>
+                  <Input
+                    placeholder="Required if rejecting"
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    className="bg-secondary border-border"
+                    disabled={savingId === selected._id}
+                  />
                 </div>
 
                 <div className="space-y-2">

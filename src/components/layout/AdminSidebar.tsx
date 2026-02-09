@@ -2,8 +2,6 @@ import {
   LayoutDashboard, 
   Users, 
   BadgeCheck,
-  CreditCard,
-  Settings, 
   Heart,
   LogOut
 } from "lucide-react";
@@ -26,7 +24,6 @@ const mainNavItems = [
   { title: "Users", url: "/users", icon: Users },
   { title: "Matches", url: "/matches", icon: Heart },
   { title: "Verification", url: "/verification", icon: BadgeCheck },
-  { title: "Subscriptions", url: "/subscriptions", icon: CreditCard },
 ];
 
 // const analyticsItems = [
@@ -35,7 +32,6 @@ const mainNavItems = [
 // ];
 
 const settingsItems = [
-  { title: "Settings", url: "/settings", icon: Settings },
   { title: "Logout", url: "/login", icon: LogOut, isLogout: false },
 ];
 
@@ -60,7 +56,7 @@ export function AdminSidebar() {
             <Heart className="h-5 w-5 text-primary-foreground fill-primary-foreground" />
           </div>
           {!collapsed && (
-            <span className="font-semibold text-lg tracking-tight">DateAdmin</span>
+            <span className="font-semibold text-lg tracking-tight">BlumeAdmin</span>
           )}
         </div>
       </div>

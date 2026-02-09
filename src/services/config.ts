@@ -18,5 +18,6 @@ export const API_ENDPOINTS = {
   },
   VERIFICATION: {
     GET_ALL_PENDING: "/admin/get-all-pending-verification",
+    UPDATE: "/admin/update-verification",
   },
 } as const;
